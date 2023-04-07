@@ -103,8 +103,8 @@ export default  defineComponent({
           console.log(msg);
           var res = calcUserAAVEMaxLeverage(account, msg).then(value => {
             console.log(value);
-            msg[4] = "4";
-            msg[5] = "20";
+            msg[4] = state.loanForm.leverage;
+            msg[5] = state.loanForm.slippage;
             calcUserLeverFlashLoan(account, msg).then(value => {
               console.log(value);
               const { flashloanAmount, needSwapLongAsset, amountOutLeast } = value;

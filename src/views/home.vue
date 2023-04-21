@@ -43,7 +43,7 @@
 
 <script lang="ts" >
 import {defineComponent, reactive, toRefs} from "vue";
-import loanForm from "./flashloanForm.vue";
+import loanForm from "./flashloanForm/index.vue";
 import detectEthereumProvider from '@metamask/detect-provider';
 import { ethers } from "ethers";
 import MetaMaskOnboarding from '@metamask/onboarding';
@@ -143,7 +143,7 @@ $homeNavLengh: 8;
   border: 1px  gray solid ;
   margin: 30px;
   box-shadow: 5px 5px 10px #aaa;
-  height: 300px;
+  height: 450px;
   border-radius: 2px;
 }
 .data-border{

@@ -1,3 +1,28 @@
+import { BigNumber, Contract, Signer, ethers } from 'ethers';
+import {
+    cUSDC_comet_ADDRESS,
+} from '../address';
+import { getMaxLeverage } from "./leverage";
+import { deconstructMaxLever } from "./aaveLogic.vue";
+import {Percent} from '@uniswap/sdk-core';
+import { 
+  calcUserAssetValue,
+  calcLeveragePosition,
+  calcNeedBorrowValue,
+  calcNeedBorrowAmount,
+  adoptTokenDicimals,
+} from './helpers/leverage';
+import {
+    globalProvider,
+} from '../common/GLOBAL.vue';
+
+import { 
+    getAssetPriceOnAAVE,
+    calcFlashLoanFee
+} from "./helpers/aaveHelper.vue";
+import {
+    num2Fixed
+} from "./helpers/generalHelper";
 
 export const calcUserCOMPMaxLeverage = async (user: Signer, msg: string[]) => {
     console.log(await user.getAddress());
@@ -57,7 +82,7 @@ export const calcUserLeverFlashLoanComp = async (user: Signer, msg: string[]) =>
     const slippageTolerance = new Percent(leverMsg.slippage, 10000);
     console.log("User's slippage = %s%", slippageTolerance.toFixed());
     let needSwapShortAsset = adoptTokenDicimals(calcNeedBorrowAmount(repayAmountUSD, shortAssetPrice), 8, 6).add(1);
-    console.log("   After swap, we need %s Short to swap", num2Fixed(needSwapLongAsset, 18));
+    console.log("   After swap, we need %s Short to swap", num2Fixed(needSwapShortAsset, 18));
     let amountInMax = getAmountInleast(needSwapShortAsset, leverMsg.slippage);
     console.log("       According to the slippage, the max input should be = %d", num2Fixed(amountInMax, 6));
     return {
@@ -67,17 +92,13 @@ export const calcUserLeverFlashLoanComp = async (user: Signer, msg: string[]) =>
 }
 
 /********* compHelper ********/
-import { BigNumber, Contract, Signer, ethers } from 'ethers';
-import {
-    bulker_ADDRESS,
-    cUSDC_comet_ADDRESS,
-} from '../address';
-import { getMaxLeverage } from "./leverage";
 export var COMET: Contract;
 
 export const initCompContract = async (signer: Signer) => {
     COMET = new ethers.Contract(cUSDC_comet_ADDRESS, CometABI, signer);
 }
+
+initCompContract(globalProvider);
 
 export const getUserCollateralBalance = async (userAddress: string, assetAddress: string) => {
     return (await COMET.collateralBalanceOf(userAddress, assetAddress));
